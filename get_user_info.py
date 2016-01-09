@@ -1,3 +1,4 @@
 #get_user_info
-idnum = ####
-password = ####
+idnum = #
+password = #
+classid = #

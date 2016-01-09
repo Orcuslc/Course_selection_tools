@@ -51,7 +51,8 @@ def login():
 	response = urllib.request.urlopen(req)
 	info = response.read().decode('utf-8')
 	get_info = op.read().decode('utf-8')
-	result = re.match(r'复旦教务系统', get_info)
+	result = re.match(r'我的课表', get_info)
+	print(get_info)
 	if result != []:
 		return True
 	else:
@@ -60,3 +61,4 @@ def login():
 if __name__ == '__main__':
 	a = login()
 	print(a)
+
