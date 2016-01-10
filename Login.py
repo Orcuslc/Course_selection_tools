@@ -6,16 +6,17 @@ import urllib.parse
 # import http.client
 import http.cookiejar
 import http.cookies
-# import io
-# import sys
+import io
+import sys
 import re
 from get_user_info import idnum, password
 
-# sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
 
-def login():
-	login_url = 'https://uis2.fudan.edu.cn/amserver/UI/Login'
-	data_url = 'http://jwfw.fudan.edu.cn/eams/home.action'
+login_url = 'https://uis2.fudan.edu.cn/amserver/UI/Login'
+
+
+def login_uis():
 	cookiejar = http.cookiejar.CookieJar()
 	cookie_support = urllib.request.HTTPCookieProcessor(cookiejar)
 	opener = urllib.request.build_opener(cookie_support)
@@ -28,7 +29,7 @@ def login():
 		'Referer':'https://uis1.fudan.edu.cn/amserver/UI/Login?gx_charset=UTF-8&goto=http://jwfw.fudan.edu.cn/eams/home.action',
 		'Cookie':'JSESSIONID=AD5513B6D9AB37245AA85180352EE842; AMAuthCookie=AQIC5wM2LY4SfcxpBvZV%2BYAg26ahMLmALC1XflYqVOL%2BXYw%3D%40AAJTSQACMDI%3D%23; JROUTE=2gpe; amlbcookie=02',
 		'Content-Type':'application/x-www-form-urlencoded',
-		'Content-Length':177
+		'Content-Length':0
 		}
 
 	for key in headers:
@@ -47,18 +48,40 @@ def login():
 
 	post_data = urllib.parse.urlencode(post_values).encode(encoding = 'utf-8')
 	op = opener.open(login_url, post_data)
-	req = urllib.request.Request(data_url)
-	response = urllib.request.urlopen(req)
-	info = response.read().decode('utf-8')
-	get_info = op.read().decode('utf-8')
-	result = re.match(r'我的课表', get_info)
-	print(get_info)
+
+def login_selection_page():
+	select_url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!defaultPage.action?electionProfile.id=141'
+	cookiejar = http.cookiejar.CookieJar()
+	cookie_support = urllib.request.HTTPCookieProcessor(cookiejar)
+	opener = urllib.request.build_opener(cookie_support)
+	headers = {
+		# 'GET':'/eams/stdElectCourse!defaultPage.action?electionProfile.id=141 HTTP/1.1',
+		'Accept':'text/html, application/xhtml+xml, image/jxr, */*',
+		'Accept-Language':'zh-Hans-CN,zh-Hans;q=0.8,en-US;q=0.5,en;q=0.3',
+		'Referer':'http://jwfw.fudan.edu.cn/eams/stdElectCourse!innerIndex.action?projectId=1',
+		'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.11082',
+		# Accept-Encoding: gzip, deflate
+		'Host':'jwfw.fudan.edu.cn',
+		'Connection':'Keep-Alive',
+		'Cookie':'JSESSIONID=FBC559228A450593AC3DD9E3AD89E63C.82-; amlbcookie=01; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx56KrhmUxxYAPHgu1vsyIkdTSWl5GFX7I%3D%40AAJTSQACMDE%3D%23'
+		}
+
+	for key in headers:
+		opener.addheaders = [(key, headers[key])]
+
+	op = opener.open(select_url)
+	info = op.read().decode('utf-8')
+	print(info)
+	result = re.findall(r'courseTable', info)
 	if result != []:
 		return True
 	else:
 		return False
 
-if __name__ == '__main__':
-	a = login()
-	print(a)
+def login():
+	login_uis()
+	login_result = login_selection_page()
+	print(login_result)
 
+if __name__ == '__main__':
+	login()
