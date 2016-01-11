@@ -83,11 +83,13 @@ class login_client:
 		data_op = self.opener.open(course_data_url).read()
 		f = open(self.data_route, 'wb')
 		f.write(data_op)
+		f.close()
 		self.data_status = True
 
 	def _course_data_analysis(self):
 		if self.data_status != True:
 			print('Failed to get data, please try again')
+			return
 		data = codecs.open(self.data_route, 'r', 'utf-8').read()
 		data = str(data)
 		courses = re.findall(r"id:\d{6},no:'\w{4}\d{6}.\d\d'", data)
@@ -103,11 +105,12 @@ class login_client:
 		self._login_page()
 		self._get_data()
 		self._course_data_analysis()
-		print(1)
+		print('data complete')
+
 
 
 if __name__ == '__main__':
 	client = login_client()
 	client.login()
 	print(client.course_status)
-	print(client.course_data)
+	# print(client.course_data)
