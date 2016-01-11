@@ -10,17 +10,18 @@ import http.cookies
 import io
 import sys
 import re
+import json
 from get_user_info import idnum, password
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
 
 class login:
 	def __init__(self):
-		self.url = 'https://uis2.fudan.edu.cn/amserver/UI/Login'
 		self.status = False
 		self.info = None
 
 	def login_uis(self):
+		url = 'https://uis2.fudan.edu.cn/amserver/UI/Login'
 		cookiejar = http.cookiejar.CookieJar()
 		cookie_support = urllib.request.HTTPCookieProcessor(cookiejar)
 		opener = urllib.request.build_opener(cookie_support)
@@ -51,7 +52,7 @@ class login:
 			}
 
 		post_data = urllib.parse.urlencode(post_values).encode(encoding = 'utf-8')
-		op = opener.open(self.url, post_data)
+		op = opener.open(url, post_data)
 
 	def login_selection_page(self):
 		select_url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!defaultPage.action?electionProfile.id=141'
@@ -59,22 +60,37 @@ class login:
 		cookie_support = urllib.request.HTTPCookieProcessor(cookiejar)
 		opener = urllib.request.build_opener(cookie_support)
 		headers = {
-			# 'GET':'/eams/stdElectCourse!defaultPage.action?electionProfile.id=141 HTTP/1.1',
-			'Accept':'text/html, application/xhtml+xml, image/jxr, */*',
-			'Accept-Language':'zh-Hans-CN,zh-Hans;q=0.8,en-US;q=0.5,en;q=0.3',
-			'Referer':'http://jwfw.fudan.edu.cn/eams/stdElectCourse!innerIndex.action?projectId=1',
-			'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.11082',
+			# GET /eams/stdElectCourse!data.action?profileId=141 HTTP/1.1
+			'Accept': 'application/javascript, */*;q=0.8',
+			'Referer': 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!defaultPage.action?electionProfile.id=141',
+			'Accept-Language': 'zh-Hans-CN,zh-Hans;q=0.8,en-US;q=0.5,en;q=0.3',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.11082',
 			# Accept-Encoding: gzip, deflate
-			'Host':'jwfw.fudan.edu.cn',
-			'Connection':'Keep-Alive',
-			'Cookie':'JSESSIONID=FBC559228A450593AC3DD9E3AD89E63C.82-; amlbcookie=01; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx56KrhmUxxYAPHgu1vsyIkdTSWl5GFX7I%3D%40AAJTSQACMDE%3D%23'
+			'If-None-Match': '1452499784566_307406',
+			'Host': 'jwfw.fudan.edu.cn',
+			'Connection': 'Keep-Alive',
+			'Cookie': 'semester.id=182; JSESSIONID=ED4711B1DDD14E6FCA604001FFB11414.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4SfczIstX%2Ffe9Zq42Gp%2BPh0qnWXJTTxjK3t8E%3D%40AAJTSQACMDI%3D%23'
 			}
+		# 	}
 
+		# headers = {
+		# 	# GET /eams/stdElectCourse!defaultPage.action?electionProfile.id=141 HTTP/1.1
+		# 	'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
+		# 	'Accept-Language': 'zh-Hans-CN,zh-Hans;q=0.8,en-US;q=0.5,en;q=0.3',
+		# 	'Referer': 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!innerIndex.action?projectId=1',
+		# 	'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.11082',
+		# 	'Accept-Encoding': 'gzip, deflate',
+		# 	'Host': 'jwfw.fudan.edu.cn',
+		# 	'Connection': 'Keep-Alive',
+		# 	# 'Cookie': 'semester.id=182; JSESSIONID=0D0EEEF58F7A20581380F5FEC0CB1930.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4SfczIstX%2Ffe9Zq42Gp%2BPh0qnWXJTTxjK3t8E%3D%40AAJTSQACMDI%3D%23'
+
+		# }
 		for key in headers:
 			opener.addheaders = [(key, headers[key])]
 
 		op = opener.open(select_url)
 		info = op.read().decode('utf-8')
+
 		result = re.findall(r'courseTable', info)
 		if result != []:
 			return True, info
