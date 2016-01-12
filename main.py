@@ -7,3 +7,6 @@ def select_course():
 	client = post_client()
 	result = client.post()
 	print(result)
+
+if __name__ == '__main__':
+	select_course()

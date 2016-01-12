@@ -12,6 +12,7 @@ import re
 import json
 import time
 import codecs
+import threading
 from get_user_info import idnum, password
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
@@ -61,6 +62,8 @@ class login_client:
 			}
 		post_data = urllib.parse.urlencode(post_values).encode(encoding = 'utf-8')
 		try:
+			op = self.opener.open(url, post_data).read().decode('utf-8')
+		except urllib.error.HTTPError:
 			op = self.opener.open(url, post_data).read().decode('utf-8')
 		except urllib.error.HTTPError:
 			op = self.opener.open(url, post_data).read().decode('utf-8')

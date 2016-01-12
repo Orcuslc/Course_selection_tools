@@ -21,17 +21,16 @@ class post_client(login_client):
 
 	def _select(self):
 		'''
-		剩下一个问题尚未解决：在向post_url提交表单时，服务器自动将其重定向至main页。
-		如何向此地址提交表单？
+		剩下一个问题尚未解决：在向post_url提交表单时,可能因为无法实时刷新的原因，系统返回一个Notice页面。
+		如何向此地址提交表单？或者说，如何实时刷新？
 		'''
-		post_url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!batchOperator.action?Profile.id=141'
+		post_url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!batchOperator.action?profileid=141'
 		post_values = {
 			'optype':'true',
 			'operator0':self.course_id.join(':true:0')
 		}
 		post_data = urllib.parse.urlencode(post_values).encode(encoding = 'utf-8')
 		headers = {
-			'POST': '/eams/stdElectCourse!batchOperator.action?profileId=141 HTTP/1.1',
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 			'Accept': 'text/html, */*; q=0.01',
 			'X-Requested-With': 'XMLHttpRequest',
@@ -43,7 +42,7 @@ class post_client(login_client):
 			'Host': 'jwfw.fudan.edu.cn',
 			'Connection': 'Keep-Alive',
 			'Pragma': 'no-cache',
-			# 'Cookie': 'semester.id=182; JSESSIONID=; amlbcookie=01; iPlanetDirectoryPro=AQIC5wM2LY4SfcwIXJ%2BM5po2KR3riijkoaA9oqAzbzpBc9w%3D%40AAJTSQACMDE%3D%23'
+			'Cookie':'JSESSIONID=BCCB0F9D60491827F5B800A1E7049E5C.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx1B39uh3RpUgBDj%2B%2BlU82jTfNmAjsLUCI%3D%40AAJTSQACMDI%3D%23'
 				}
 		request = urllib.request.Request(url = post_url, headers = headers, data = post_data)
 		# for key in headers:
@@ -54,6 +53,8 @@ class post_client(login_client):
 		return info
 
 	def post(self):
+		info = self._select()
+		self._login_page()
 		info = self._select()
 		result1 = re.findall(r'选课成功', info)
 		result2 = re.findall(r'人数已满', info)
