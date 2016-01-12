@@ -8,7 +8,7 @@ import io
 import sys
 import re
 import threading
-import requests
+# import requests
 from login import login_client
 from get_user_info import courseid
 
@@ -74,6 +74,8 @@ class post_client(login_client):
 		'''
 		原因在于，由于urllib不支持keep-alive，故与服务器之间的连接自动断开。
 		试图使用http.client解决问题。
+		仍然不知道问题出于何处。但是最大的可能在于与服务器之间连接问题。
+		经使用requests连接，使得connection成为keep-alive后无法解决问题。
 		'''
 		post_url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!batchOperator.action?profileid=141'
 		post_values = {
@@ -95,12 +97,13 @@ class post_client(login_client):
 			'Pragma': 'no-cache',
 			# 'Cookie':'JSESSIONID=BCCB0F9D60491827F5B800A1E7049E5C.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx1B39uh3RpUgBDj%2B%2BlU82jTfNmAjsLUCI%3D%40AAJTSQACMDI%3D%23'
 				}
-		# request = urllib.request.Request(url = post_url, headers = headers, data = post_data)
+		request = urllib.request.Request(url = post_url, headers = headers, data = post_data)
 		# request = HTTPRequest('jwfw.fudan.edu.cn', post_url, headers)
 		# self.opener.addheaders = request
-		requests.post(post_url, headers = headers, data = post_data)
+		# requests.post(post_url, headers = headers, data = post_data, cookies = self.cookie)
 		
-		# info = self.opener.open(request).read().decode('utf-8')
+		# info = self.opener.open(post_url).read().decode('utf-8')
+		info = self.opener.open(request).read().decode('utf-8')
 		self.post_status = True
 		return info
 

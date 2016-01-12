@@ -6,8 +6,8 @@ import urllib.parse
 import urllib.error
 import http.cookiejar
 import http.cookies
-import http.client
-import requests
+# import http.client
+# import requests
 import io
 import sys
 import re
@@ -28,14 +28,15 @@ class login_client:
 		self.login_status = False
 		self.data_status = False
 		self.opener = None
+		self.cookie = None
 		self.data_route = 'data.json'
 		self.course_data = None
 		self.course_status = False
 
 	def _login_uis(self):
 		url = 'https://uis2.fudan.edu.cn/amserver/UI/Login'
-		cookiejar = http.cookiejar.CookieJar()
-		cookie_support = urllib.request.HTTPCookieProcessor(cookiejar)
+		self.cookie = http.cookiejar.CookieJar()
+		cookie_support = urllib.request.HTTPCookieProcessor(self.cookie)
 		self.opener = urllib.request.build_opener(cookie_support)
 		headers = {
 			'Host':'uis1.fudan.edu.cn',
@@ -82,6 +83,7 @@ class login_client:
 		page_result = re.findall(r'courseTable', page)
 		if page_result != []:
 			self.login_status = True
+		# requests.get(page_url, cookies = self.cookie)
 
 	def _get_data(self):
 		if self.login_status != True:
@@ -93,6 +95,7 @@ class login_client:
 		f.write(data_op)
 		f.close()
 		self.data_status = True
+		# requests.get(course_data_url, cookies = self.cookie)
 
 	def _course_data_analysis(self):
 		if self.data_status != True:
