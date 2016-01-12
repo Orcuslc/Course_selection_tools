@@ -16,6 +16,10 @@ from get_user_info import idnum, password
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
 
+class HttpRedirect_Handler(urllib.request.HTTPRedirectHandler):
+    def http_error_302(self, req, fp, code, msg, headers):
+        pass
+
 class login_client:
 	def __init__(self):
 		self.uis_status = False
@@ -89,7 +93,7 @@ class login_client:
 	def _course_data_analysis(self):
 		if self.data_status != True:
 			print('Failed to get data, please try again')
-			return
+			return 
 		data = codecs.open(self.data_route, 'r', 'utf-8').read()
 		data = str(data)
 		courses = re.findall(r"id:\d{6},no:'\w{4}\d{6}.\d\d'", data)
