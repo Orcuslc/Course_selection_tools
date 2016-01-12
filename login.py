@@ -6,13 +6,14 @@ import urllib.parse
 import urllib.error
 import http.cookiejar
 import http.cookies
+import http.client
+import requests
 import io
 import sys
 import re
 import json
 import time
 import codecs
-import threading
 from get_user_info import idnum, password
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
@@ -46,7 +47,7 @@ class login_client:
 			'Cookie':'JSESSIONID=AD5513B6D9AB37245AA85180352EE842; AMAuthCookie=AQIC5wM2LY4SfcxpBvZV%2BYAg26ahMLmALC1XflYqVOL%2BXYw%3D%40AAJTSQACMDI%3D%23; JROUTE=2gpe; amlbcookie=02',
 			'Content-Type':'application/x-www-form-urlencoded',
 			'Content-Length':177,
-			'Connection':'keep-alive'
+			'Connection':'close'
 			}
 		for key in headers:
 			self.opener.addheaders = [(key, headers[key])]

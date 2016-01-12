@@ -3,14 +3,64 @@ import urllib.parse
 import urllib.request
 import urllib.response
 import urllib.error
+import http.client
 import io
 import sys
 import re
 import threading
+import requests
 from login import login_client
 from get_user_info import courseid
 
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding = 'utf-8')
+
+# class HTTPRequest( object ):
+
+# 	def __init__( self, host, url, headers={}, secure=False ):
+# 		self.host = host
+# 		self.url = url
+# 		self.secure = secure
+# 		self.headers = {}
+# 		self.type = self.get_type()
+# 		for key, value in headers.items():
+# 			self.add_header(key, value)
+
+# 	def has_header( self, name ):
+# 		return name in self.headers
+
+# 	def add_header( self, key, val ):
+# 		self.headers[key.capitalize()] = val
+
+# 	def add_unredirected_header(self, key, val):
+# 		self.headers[key.capitalize()] = val
+
+# 	def is_unverifiable( self ):
+# 		return True
+
+# 	def get_type( self ):
+# 		return 'https' if self.secure else 'http'
+
+# 	def get_full_url( self ):
+# 		port_str = ""
+# 		port = str(self.host[1])
+# 		if self.secure:
+# 			if port != 443:
+# 				port_str = ":"+port
+# 		else:
+# 			if port != 80:
+# 				port_str = ":"+port
+# 		return self.get_type() + '://' + self.host[0] + port_str + self.url
+
+# 	def get_header( self, header_name, default=None ):
+# 		return self.headers.get( header_name, default )
+
+# 	def get_host( self ):
+# 		return self.host[0]
+
+# 	get_origin_req_host = get_host
+
+# 	def get_headers( self ):
+# 		return self.headers
 
 class post_client(login_client):
 	def __init__(self):
@@ -22,9 +72,8 @@ class post_client(login_client):
 
 	def _select(self):
 		'''
-		# 剩下一个问题尚未解决：在向post_url提交表单时,可能因为无法实时刷新的原因，系统返回一个Notice页面。
-		# 如何向此地址提交表单？或者说，如何实时刷新？
-		不对...似乎是由于同一个帐号在多个地方登录，导致与服务器的连接出现问题。
+		原因在于，由于urllib不支持keep-alive，故与服务器之间的连接自动断开。
+		试图使用http.client解决问题。
 		'''
 		post_url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!batchOperator.action?profileid=141'
 		post_values = {
@@ -44,26 +93,18 @@ class post_client(login_client):
 			'Host': 'jwfw.fudan.edu.cn',
 			'Connection': 'Keep-Alive',
 			'Pragma': 'no-cache',
-			'Cookie':'JSESSIONID=BCCB0F9D60491827F5B800A1E7049E5C.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx1B39uh3RpUgBDj%2B%2BlU82jTfNmAjsLUCI%3D%40AAJTSQACMDI%3D%23'
+			# 'Cookie':'JSESSIONID=BCCB0F9D60491827F5B800A1E7049E5C.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx1B39uh3RpUgBDj%2B%2BlU82jTfNmAjsLUCI%3D%40AAJTSQACMDI%3D%23'
 				}
-		request = urllib.request.Request(url = post_url, headers = headers, data = post_data)
-		# for key in headers:
-		# 	self.opener.addheaders = [(key, headers[key])]
-		info = self.opener.open(request).read().decode('utf-8')
-		# info = self.opener.open(post_url, post_data).read().decode('utf-8')
+		# request = urllib.request.Request(url = post_url, headers = headers, data = post_data)
+		# request = HTTPRequest('jwfw.fudan.edu.cn', post_url, headers)
+		# self.opener.addheaders = request
+		requests.post(post_url, headers = headers, data = post_data)
+		
+		# info = self.opener.open(request).read().decode('utf-8')
 		self.post_status = True
 		return info
 
-	# def _refresh(self, max_iter):
-	# 	url = 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!defaultPage.action?electionProfile.id=141'
-	# 	count = 0
-	# 	while count < max_iter:
-	# 		self.opener.open(url)
-	# 		count += 1
-
 	def post(self):
-		info = self._select()
-		self._login_page()
 		info = self._select()
 		result1 = re.findall(r'选课成功', info)
 		result2 = re.findall(r'人数已满', info)
@@ -75,13 +116,6 @@ class post_client(login_client):
 			self.select_status = False
 		print(info)
 		print(self.select_status)
-
-	# def select(self):
-	# 	thread_list = [threading.Thread(target = self._refresh(3)), threading.Thread(target = self._post)]
-	# 	for thread in thread_list:
-	# 		thread.start()
-	# 	for thread in thread_list:
-	# 		thread.join()
 
 if __name__ == '__main__':
 	client = post_client()
