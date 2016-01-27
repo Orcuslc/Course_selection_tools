@@ -87,16 +87,18 @@ class post_client(login_client):
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 			'Accept': 'text/html, */*; q=0.01',
 			'X-Requested-With': 'XMLHttpRequest',
-			'Referer': 'http://jwfw.fudan.edu.cn/eams/stdElectCourse!defaultPage.action?electionProfile.id=141',
+			'Referer': 'http://xk.fudan.edu.cn/xk/stdElectCourse!defaultPage.action?electionProfile.id=141',
 			'Accept-Language': 'zh-Hans-CN,zh-Hans;q=0.8,en-US;q=0.5,en;q=0.3',
 			# 'Accept-Encoding': 'gzip, deflate',
-			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.11082',
-			'Content-Length': '39',
-			'Host': 'jwfw.fudan.edu.cn',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.11102',
+			'Content-Length': 39,
+			'DNT': 1,
+			'Host': 'xk.fudan.edu.cn',
 			'Connection': 'Keep-Alive',
 			'Pragma': 'no-cache',
-			# 'Cookie':'JSESSIONID=BCCB0F9D60491827F5B800A1E7049E5C.82-; amlbcookie=02; iPlanetDirectoryPro=AQIC5wM2LY4Sfcx1B39uh3RpUgBDj%2B%2BlU82jTfNmAjsLUCI%3D%40AAJTSQACMDI%3D%23'
-				}
+			# 'Cookie': 'JSESSIONID=F0167895F244CF43B6B43075FF47CA6F.62-; SVRNAME=xk1'
+			}
+
 		request = urllib.request.Request(url = post_url, headers = headers, data = post_data)
 		# request = HTTPRequest('jwfw.fudan.edu.cn', post_url, headers)
 		# self.opener.addheaders = request
